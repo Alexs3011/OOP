@@ -1,86 +1,171 @@
 ﻿#include <iostream>
 #include <math.h>
+#include <vector> 
 #include <iomanip>
 #include "ComplexNumbers.h"
 
 using namespace std;
 
-
 int main() {
-
     setlocale(LC_ALL, "Russian");
 
-    run_tests();
+    ComplexNumber* numbers = nullptr; // Указатель на динамический массив
+    ComplexNumber single_number;      // Объект для операций с одним числом
+    string result;
 
-    double r1, im1, r2, im2;
     int choice = chois();
+    if (choice == 6 || choice == 7) {
+        // Ввод только одного числа
+        manual_input_one(single_number);
 
-
-    try {
-        if (choice == 6 || choice == 7) {
-            // Ввод данных для одного числа
-            cout << "Введите действительную и мнимую часть числа: ";
-            cin >> r1 >> im1;
-            ComplexNumber num1(r1, im1);
-
-            switch (choice) {
-            case 6: {
-                cout << "Модуль числа: " << num1.modulus() << endl;
-                break;
-            }
-            case 7: {
-                cout << "Тригонометрическая форма числа: " << num1.trigonometric_form() << endl;
-                break;
-            }
-            }
+        if (choice == 6) {
+            result = "Модуль числа: " + to_string(single_number.modulus());
         }
-        else {
-            // Ввод данных для двух чисел
-            cout << "Введите действительную и мнимую часть первого комплексного числа: ";
-            cin >> r1 >> im1;
-
-            cout << "Введите действительную и мнимую часть второго комплексного числа: ";
-            cin >> r2 >> im2;
-
-            ComplexNumber num1(r1, im1);
-            ComplexNumber num2(r2, im2);
-
-            switch (choice) {
-            case 1: {
-                ComplexNumber result = ComplexNumber::sum(num1, num2);
-                cout << "Результат сложения: " << result.to_string() << endl;
-                break;
-            }
-            case 2: {
-                ComplexNumber result = ComplexNumber::sub(num1, num2);
-                cout << "Результат вычитания: " << result.to_string() << endl;
-                break;
-            }
-            case 3: {
-                ComplexNumber result = ComplexNumber::multiply(num1, num2);
-                cout << "Результат умножения: " << result.to_string() << endl;
-                break;
-            }
-            case 4: {
-                ComplexNumber result = ComplexNumber::divide(num1, num2);
-                cout << "Результат деления: " << result.to_string() << endl;
-                break;
-            }
-            case 5: {
-                if (num1.is_equal(num2)) {
-                    cout << "Комплексные числа равны." << endl;
-                }
-                else {
-                    cout << "Комплексные числа не равны." << endl;
-                }
-                break;
-            }
-            }
+        else if (choice == 7) {
+            result = "Тригонометрическая форма числа: " + single_number.trigonometric_form();
         }
+
+        cout << result << endl;
+
+        // Сохранение результата в файл
+        string output_filename;
+        cout << "Введите имя файла для записи результатов: ";
+        cin >> output_filename;
+        write_to_file(output_filename, single_number, result);
     }
-    catch (const std::invalid_argument& e) {
-        cout << "Ошибка: " << e.what() << endl;
+    else {
+        // Выделяем память для двух чисел
+        numbers = new ComplexNumber[2];
+
+        manual_input_two(numbers);
+
+        try {
+            switch (choice) {
+            case 1:
+                result = "Результат сложения: " + (numbers[0] + numbers[1]).to_string();
+                break;
+            case 2:
+                result = "Результат вычитания: " + (numbers[0] - numbers[1]).to_string();
+                break;
+            case 3:
+                result = "Результат умножения: " + ComplexNumber::multiply(numbers[0], numbers[1]).to_string();
+                break;
+            case 4:
+                result = "Результат деления: " + ComplexNumber::divide(numbers[0], numbers[1]).to_string();
+                break;
+            case 5:
+                result = numbers[0].is_equal(numbers[1]) ? "Комплексные числа равны." : "Комплексные числа не равны.";
+                break;
+            default:
+                cout << "Неверный выбор операции!" << endl;
+                delete[] numbers; 
+                return 1;
+            }
+
+            cout << result << endl;
+
+            // Сохранение результата в файл
+            string output_filename;
+            cout << "Введите имя файла для записи результатов: ";
+            cin >> output_filename;
+            write_to_file(output_filename, numbers, result);
+
+        }
+        catch (const std::invalid_argument& e) {
+            cout << "Ошибка: " << e.what() << endl;
+        }
+
+        delete[] numbers;
     }
+
+    ComplexNumber* obj = new ComplexNumber;
+    (*obj).set_imagi(5);
+    obj->set_real(7);
+    std::cout << obj->to_string();
+    delete obj;
 
     return 0;
 }
+
+//#include <iostream>
+//#include <math.h>
+//#include <vector> 
+//#include <iomanip>
+//#include "ComplexNumbers.h"
+//
+//using namespace std;
+//
+//
+//int main() {
+//    setlocale(LC_ALL, "Russian");
+//
+//    ComplexNumber numbers[2];
+//    ComplexNumber single_number;
+//    string result;
+//
+//    // Выбор операции
+//    int choice = chois();
+//
+//    if (choice == 6 || choice == 7) {
+//        // Ввод только одного числа
+//        manual_input_one(single_number);
+//
+//        if (choice == 6) {
+//            result = "Модуль числа: " + to_string(single_number.modulus());
+//        }
+//        else if (choice == 7) {
+//            result = "Тригонометрическая форма числа: " + single_number.trigonometric_form();
+//        }
+//
+//        cout << result << endl;
+//
+//        // Сохранение результата в файл
+//        string output_filename;
+//        cout << "Введите имя файла для записи результатов: ";
+//        cin >> output_filename;
+//        write_to_file(output_filename, single_number, result);
+//
+//    }
+//    else {
+//        // Ввод двух чисел
+//        cout << "Вы выбрали операцию, требующую двух чисел.\n";
+//        manual_input_two(numbers);
+//
+//        try {
+//            switch (choice) {
+//            case 1:
+//                result = "Результат сложения: " + (numbers[0] + numbers[1]).to_string();
+//                break;
+//            case 2:
+//                result = "Результат вычитания: " + (numbers[0] - numbers[1]).to_string();
+//                break;
+//            case 3:
+//                result = "Результат умножения: " + ComplexNumber::multiply(numbers[0], numbers[1]).to_string();
+//                break;
+//            case 4:
+//                result = "Результат деления: " + ComplexNumber::divide(numbers[0], numbers[1]).to_string();
+//                break;
+//            case 5:
+//                result = numbers[0].is_equal(numbers[1]) ? "Комплексные числа равны." : "Комплексные числа не равны.";
+//                break;
+//            default:
+//                cout << "Неверный выбор операции!" << endl;
+//                return 1;
+//            }
+//
+//            cout << result << endl;
+//
+//            // Сохранение результата в файл
+//            string output_filename;
+//            cout << "Введите имя файла для записи результатов: ";
+//            cin >> output_filename;
+//            write_to_file(output_filename, numbers, result);
+//
+//        }
+//        catch (const std::invalid_argument& e) {
+//            cout << "Ошибка: " << e.what() << endl;
+//        }
+//    }
+//
+//    return 0;
+//}
